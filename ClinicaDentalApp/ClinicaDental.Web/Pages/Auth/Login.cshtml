@@ -1,0 +1,213 @@
+@page
+@model ClinicaDental.Web.Pages.Auth.LoginModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Clínica Dental</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clinic: {
+                            50: "#effcfb",
+                            100: "#d8f6f3",
+                            200: "#b3ece7",
+                            300: "#7eddd7",
+                            400: "#46c7c3",
+                            500: "#24aba8",
+                            600: "#198887",
+                            700: "#176d6d",
+                            800: "#175759",
+                            900: "#17494a"
+                        }
+                    },
+                    boxShadow: {
+                        soft: "0 20px 45px rgba(15, 23, 42, 0.10)",
+                        login: "0 28px 80px rgba(15, 23, 42, 0.16)",
+                        glow: "0 18px 50px rgba(25, 136, 135, 0.18)"
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="min-h-screen overflow-x-hidden bg-slate-950 text-slate-800">
+    <main class="login-scene login-scene-v3 relative min-h-screen overflow-hidden lg:h-screen">
+        <div class="login-orb login-orb-one"></div>
+        <div class="login-orb login-orb-two"></div>
+        <div class="login-orb login-orb-three"></div>
+        <div class="login-grid-pattern"></div>
+
+        <div class="relative z-10 grid min-h-screen lg:h-screen lg:grid-cols-[0.95fr_1.05fr]">
+            <section class="hidden min-h-0 flex-col justify-between overflow-hidden p-8 text-white lg:flex xl:p-10">
+                <div class="animate-fade-up flex items-center gap-3">
+                    <div class="icon-glass flex h-14 w-14 items-center justify-center rounded-3xl border border-white/20 bg-white/15 shadow-lg backdrop-blur-xl">
+                        <img src="~/favicon.svg" alt="Clínica Dental" class="h-8 w-8 object-contain" />
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight">Clínica Dental</h1>
+                        <p class="text-sm font-medium text-cyan-100/85">Sistema clínico seguro y moderno</p>
+                    </div>
+                </div>
+
+                <div class="relative flex min-h-0 flex-1 items-center justify-center py-4">
+                    <div class="absolute h-[27rem] w-[27rem] rounded-full border border-white/10 bg-white/5 backdrop-blur-md animate-soft-pulse xl:h-[31rem] xl:w-[31rem]"></div>
+
+                    <div class="login-badge login-badge-top animate-float-slow">
+                        <i data-lucide="calendar-check" class="h-5 w-5 text-cyan-100"></i>
+                        <div>
+                            <p>Agenda</p>
+                            <strong>Citas listas</strong>
+                        </div>
+                    </div>
+
+                    <div class="login-badge login-badge-bottom animate-float-slower">
+                        <i data-lucide="shield-check" class="h-5 w-5 text-cyan-100"></i>
+                        <div>
+                            <p>Acceso</p>
+                            <strong>Seguro</strong>
+                        </div>
+                    </div>
+
+                    <img src="~/images/doctor-login.webp"
+                         alt="Doctor"
+                         class="relative z-10 max-h-[440px] w-auto object-contain drop-shadow-[0_35px_75px_rgba(0,0,0,0.42)] xl:max-h-[500px] animate-fade-in" />
+                </div>
+
+
+            </section>
+
+            <section class="flex min-h-screen items-center justify-center px-5 py-8 sm:px-8 lg:min-h-0 lg:bg-white/10 lg:py-6 lg:backdrop-blur-[2px]">
+                <div class="w-full max-w-[27rem] animate-fade-up">
+                    <div class="mb-5 text-center lg:hidden">
+                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl border border-white/20 bg-white/15 text-white shadow-login backdrop-blur-xl">
+                            <img src="~/favicon.svg" alt="Clínica Dental" class="h-9 w-9 object-contain" />
+                        </div>
+                        <h1 class="text-3xl font-black tracking-tight text-white">Clínica Dental</h1>
+                        <p class="mt-2 text-sm text-cyan-100/85">Gestión clínica segura</p>
+                    </div>
+
+                    <div class="login-card login-card-clean rounded-[2rem] border border-white/70 bg-white/[0.92] p-6 shadow-login backdrop-blur-2xl sm:p-7">
+                        <div class="mb-6">
+                            <span class="inline-flex items-center gap-2 rounded-full border border-clinic-100 bg-clinic-50 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-clinic-700">
+                                <i data-lucide="shield-check" class="h-4 w-4"></i>
+                                Acceso seguro
+                            </span>
+                            <h2 class="mt-4 text-3xl font-black tracking-tight text-slate-950">Bienvenido de nuevo</h2>
+                            <p class="mt-2 text-sm leading-6 text-slate-500">
+                                Ingresa tus credenciales para continuar con el panel de administración.
+                            </p>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                        {
+                            <div class="mb-5 animate-shake-soft flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                                <i data-lucide="circle-alert" class="mt-0.5 h-5 w-5 flex-none"></i>
+                                <span>@Model.ErrorMessage</span>
+                            </div>
+                        }
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        </div>
+
+                        <form method="post" class="space-y-4">
+                            <div class="form-field-animated">
+                                <label asp-for="Input.Usuario" class="mb-2 block text-sm font-black text-slate-700">
+                                    Usuario
+                                </label>
+                                <div class="relative input-shell">
+                                    <span class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-clinic-700">
+                                        <i data-lucide="user-round" class="h-5 w-5"></i>
+                                    </span>
+                                    <input asp-for="Input.Usuario"
+                                           class="block w-full rounded-2xl border border-slate-200 bg-white/95 px-4 py-3.5 pl-12 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                                           placeholder="Ingresa tu usuario" />
+                                </div>
+                                <span asp-validation-for="Input.Usuario" class="mt-2 block text-sm text-red-600"></span>
+                            </div>
+
+                            <div class="form-field-animated">
+                                <label asp-for="Input.Password" class="mb-2 block text-sm font-black text-slate-700">
+                                    Contraseña
+                                </label>
+                                <div class="relative input-shell">
+                                    <span class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-clinic-700">
+                                        <i data-lucide="lock-keyhole" class="h-5 w-5"></i>
+                                    </span>
+                                    <input asp-for="Input.Password"
+                                           id="passwordInput"
+                                           type="password"
+                                           class="block w-full rounded-2xl border border-slate-200 bg-white/95 px-4 py-3.5 pl-12 pr-12 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                                           placeholder="Ingresa tu contraseña" />
+                                    <button type="button"
+                                            id="togglePassword"
+                                            class="absolute inset-y-0 right-3 my-auto inline-flex h-9 w-9 items-center justify-center rounded-xl text-clinic-700 transition hover:bg-clinic-50 hover:text-clinic-900"
+                                            aria-label="Mostrar u ocultar contraseña">
+                                        <i data-lucide="eye" class="h-5 w-5"></i>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Input.Password" class="mt-2 block text-sm text-red-600"></span>
+                            </div>
+
+                            <div class="flex items-center justify-between text-sm">
+                                <label class="inline-flex items-center gap-2 font-semibold text-slate-600">
+                                    <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-clinic-600 focus:ring-clinic-500" />
+                                    Recordarme
+                                </label>
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500">
+                                    <i data-lucide="shield" class="h-3.5 w-3.5"></i>
+                                    Sesión protegida
+                                </span>
+                            </div>
+
+                            <button type="submit"
+                                    class="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-clinic-700 to-cyan-600 px-4 py-3.5 text-sm font-black text-white shadow-lg shadow-clinic-600/25 transition hover:-translate-y-0.5 hover:shadow-glow focus:outline-none focus:ring-4 focus:ring-clinic-200">
+                                Iniciar sesión
+                                <i data-lucide="arrow-right" class="h-4 w-4 transition group-hover:translate-x-1"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <p class="mt-4 text-center text-xs font-medium text-white/70 lg:text-slate-500">
+                        © @DateTime.Now.Year Clínica Dental
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        function renderIcons() {
+            if (window.lucide) {
+                window.lucide.createIcons({ attrs: { "stroke-width": 2.2 } });
+            }
+        }
+
+        renderIcons();
+
+        const togglePassword = document.getElementById("togglePassword");
+        const passwordInput = document.getElementById("passwordInput");
+
+        togglePassword?.addEventListener("click", function () {
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+            togglePassword.innerHTML = `<i data-lucide="${isPassword ? "eye-off" : "eye"}" class="h-5 w-5"></i>`;
+            renderIcons();
+        });
+    </script>
+</body>
+</html>
