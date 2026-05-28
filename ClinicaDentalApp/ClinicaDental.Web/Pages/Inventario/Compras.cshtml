@@ -1,0 +1,224 @@
+@page
+@model ClinicaDental.Web.Pages.Inventario.ComprasModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Compras de inventario";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Compras / entrada de inventario</h1>
+            <p class="mt-1 max-w-3xl text-sm text-slate-500">
+                Aquí se carga la cantidad que entra al inventario. El producto se crea una vez y luego sus existencias aumentan con compras.
+            </p>
+        </div>
+
+        <div class="flex flex-col gap-3 sm:flex-row">
+            <a asp-page="/Inventario/Create"
+               class="inline-flex items-center justify-center rounded-2xl border border-clinic-200 bg-clinic-50 px-4 py-2.5 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                + Nuevo producto
+            </a>
+
+            <a asp-page="/Inventario/Movimientos"
+               class="inline-flex items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-100">
+                Movimientos
+            </a>
+
+            <a asp-page="/Inventario/Index"
+               class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                Ver inventario
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            @successMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            @Model.Message
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All"
+             class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        </div>
+    }
+
+    <section class="grid gap-6 xl:grid-cols-12">
+        <div class="rounded-3xl bg-white p-6 shadow-soft ring-1 ring-slate-200 xl:col-span-5">
+            <h2 class="text-lg font-bold text-slate-900">Registrar compra</h2>
+            <p class="mt-1 text-sm text-slate-500">
+                Selecciona el producto, escribe la referencia de compra y la cantidad que ingresó.
+            </p>
+
+            <form method="post" class="mt-6 space-y-5">
+                <div>
+                    <label for="buscarProducto" class="mb-2 block text-sm font-semibold text-slate-700">Buscar producto</label>
+                    <input id="buscarProducto"
+                           type="text"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                           placeholder="Escribe nombre, código o proveedor" />
+                    <p class="mt-1 text-xs text-slate-500">El buscador filtra el listado de productos de abajo.</p>
+                </div>
+
+                <div>
+                    <label asp-for="Input.IdProducto" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Input.IdProducto"
+                            id="productoSelect"
+                            class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                        <option value="">Seleccione un producto</option>
+                        @foreach (var producto in Model.Productos)
+                        {
+                            <option value="@producto.IdProducto"
+                                    data-search="@($"{producto.CodigoProducto} {producto.Nombre} {producto.Proveedor}".ToLowerInvariant())">
+                                @producto.CodigoProducto - @producto.Nombre (@(string.IsNullOrWhiteSpace(producto.Proveedor) ? "Sin proveedor" : producto.Proveedor)) | Stock: @producto.CantidadDisponible.ToString("0.##") @producto.UnidadMedida
+                            </option>
+                        }
+                    </select>
+                    <span asp-validation-for="Input.IdProducto" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Referencia" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Referencia"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                           placeholder="Ejemplo: COMPRA-001, FACT-123, RECIBO-5" />
+                    <span asp-validation-for="Input.Referencia" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label asp-for="Input.Cantidad" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                        <input asp-for="Input.Cantidad" type="number" step="0.01" min="0.01"
+                               class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                        <span asp-validation-for="Input.Cantidad" class="mt-2 block text-sm text-red-600"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Input.CostoUnitario" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                        <input asp-for="Input.CostoUnitario" type="number" step="0.01" min="0"
+                               class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                        <span asp-validation-for="Input.CostoUnitario" class="mt-2 block text-sm text-red-600"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Observaciones" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <textarea asp-for="Input.Observaciones" rows="3"
+                              class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                              placeholder="Ejemplo: compra mensual, lote recibido, entrega parcial"></textarea>
+                    <span asp-validation-for="Input.Observaciones" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <button type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-clinic-700">
+                    Guardar entrada de inventario
+                </button>
+            </form>
+        </div>
+
+        <div class="rounded-3xl bg-white shadow-soft ring-1 ring-slate-200 xl:col-span-7">
+            <div class="border-b border-slate-100 px-6 py-4">
+                <h2 class="text-lg font-bold text-slate-900">Últimas compras registradas</h2>
+                <p class="mt-1 text-sm text-slate-500">Se muestran las últimas entradas de inventario.</p>
+            </div>
+
+            <form method="get" class="border-b border-slate-100 px-6 py-4">
+                <div class="flex flex-col gap-3 sm:flex-row">
+                    <input asp-for="Texto"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                           placeholder="Buscar por producto, código, referencia u observación" />
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-2xl border border-clinic-200 bg-clinic-50 px-5 py-3 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                        Buscar
+                    </button>
+                    <a asp-page="/Inventario/Compras"
+                       class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                        Limpiar
+                    </a>
+                </div>
+            </form>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Fecha</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Producto</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Referencia</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Cantidad</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        @if (Model.Movimientos.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">
+                                    No hay compras registradas con los filtros aplicados.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.Movimientos)
+                            {
+                                <tr class="transition hover:bg-slate-50">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                        @item.FechaMovimiento.ToString("yyyy-MM-dd HH:mm")
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="text-sm font-semibold text-slate-900">@item.Producto</p>
+                                        <p class="text-xs text-slate-500">@item.CodigoProducto</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-700">
+                                        @(string.IsNullOrWhiteSpace(item.Referencia) ? "Sin referencia" : item.Referencia)
+                                        @if (!string.IsNullOrWhiteSpace(item.Observaciones))
+                                        {
+                                            <p class="mt-1 max-w-xs text-xs text-slate-500">@item.Observaciones</p>
+                                        }
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900">
+                                        @item.Cantidad.ToString("0.##")
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                        @(item.CostoUnitario.HasValue ? item.CostoUnitario.Value.ToString("0.00") : "No indicado")
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        const buscador = document.getElementById('buscarProducto');
+        const selectProducto = document.getElementById('productoSelect');
+
+        if (buscador && selectProducto) {
+            buscador.addEventListener('input', function () {
+                const texto = this.value.toLowerCase().trim();
+
+                Array.from(selectProducto.options).forEach(function (option, index) {
+                    if (index === 0) return;
+
+                    const contenido = option.dataset.search || option.textContent.toLowerCase();
+                    option.hidden = texto.length > 0 && !contenido.includes(texto);
+                });
+            });
+        }
+    </script>
+}

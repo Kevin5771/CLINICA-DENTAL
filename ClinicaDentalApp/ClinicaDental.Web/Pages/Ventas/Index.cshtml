@@ -1,0 +1,107 @@
+@page
+@model ClinicaDental.Web.Pages.Ventas.IndexModel
+@{
+    ViewData["Title"] = "Ventas";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Ventas registradas</h1>
+            <p class="mt-1 max-w-3xl text-sm text-slate-500">Historial de transacciones de servicios realizados en la clínica.</p>
+        </div>
+        <a asp-page="/Ventas/Create" class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-clinic-700"><i data-lucide="credit-card" class="mr-2 h-4 w-4"></i> Registrar venta</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">@successMessage</div>
+    }
+
+    <section class="rounded-3xl bg-white shadow-soft ring-1 ring-slate-200">
+        <form method="get" class="border-b border-slate-100 px-6 py-5">
+            <div class="grid gap-3 lg:grid-cols-4">
+                <input asp-for="Texto" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" placeholder="Buscar paciente, comprobante o servicio" />
+                <select asp-for="IdPaciente" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Paciente</option>
+                    @foreach (var paciente in Model.Pacientes)
+                    {
+                        <option value="@paciente.IdPaciente">@paciente.NombreCompleto</option>
+                    }
+                </select>
+                <select asp-for="IdUsuarioResponsable" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Personal</option>
+                    @foreach (var usuario in Model.Usuarios)
+                    {
+                        <option value="@usuario.IdUsuario">@usuario.NombreCompleto</option>
+                    }
+                </select>
+                <select asp-for="IdCategoriaServicio" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Servicio</option>
+                    @foreach (var categoria in Model.Categorias)
+                    {
+                        <option value="@categoria.IdCategoriaServicio">@categoria.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="mt-3 grid gap-3 lg:grid-cols-4">
+                <select asp-for="IdEstadoVenta" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Estado</option>
+                    @foreach (var estado in Model.Estados)
+                    {
+                        <option value="@estado.IdEstadoVenta">@estado.Nombre</option>
+                    }
+                </select>
+                <input asp-for="FechaDesde" type="date" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                <input asp-for="FechaHasta" type="date" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 rounded-2xl border border-clinic-200 bg-clinic-50 px-5 py-3 text-sm font-semibold text-clinic-700 hover:bg-clinic-100">Filtrar</button>
+                    <a asp-page="/Ventas/Index" class="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">Limpiar</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Fecha</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Comprobante</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Paciente</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Servicio</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Responsable</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Estado</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @if (Model.Ventas.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7" class="px-6 py-10 text-center text-sm text-slate-500">
+                                <span class="empty-state-icon"><i data-lucide="credit-card" class="h-6 w-6"></i></span>
+                                <p class="mt-3 font-semibold text-slate-700">No hay ventas registradas con los filtros aplicados.</p>
+                                <p class="mt-1 text-xs text-slate-500">Prueba limpiar los filtros o registra una nueva venta.</p>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var venta in Model.Ventas)
+                        {
+                            <tr class="hover:bg-slate-50">
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">@venta.FechaVenta.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td class="px-6 py-4 text-sm font-semibold text-slate-900">@venta.NumeroVenta</td>
+                                <td class="px-6 py-4 text-sm text-slate-700">@venta.Paciente</td>
+                                <td class="px-6 py-4"><p class="text-sm font-semibold text-slate-900">@venta.CategoriaServicio</p><p class="text-xs text-slate-500">@venta.Descripcion</p></td>
+                                <td class="px-6 py-4 text-sm text-slate-700">@venta.UsuarioResponsable</td>
+                                <td class="px-6 py-4"><span class="inline-flex rounded-full bg-clinic-50 px-3 py-1 text-xs font-bold text-clinic-700 ring-1 ring-clinic-100">@venta.EstadoVenta</span></td>
+                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-bold text-slate-900">Q @venta.Total.ToString("0.00")</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
