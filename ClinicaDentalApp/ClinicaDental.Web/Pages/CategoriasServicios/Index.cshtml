@@ -1,0 +1,90 @@
+@page
+@model ClinicaDental.Web.Pages.CategoriasServicios.IndexModel
+@{
+    ViewData["Title"] = "Categorías de servicios";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Categorías de servicios</h1>
+            <p class="mt-1 max-w-3xl text-sm text-slate-500">Catálogo usado por ventas para seleccionar el servicio, consultar el precio y mantener el estado activo o inactivo.</p>
+        </div>
+        <a asp-page="/CategoriasServicios/Create" class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-clinic-700">+ Nueva categoría</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">@successMessage</div>
+    }
+
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">@errorMessage</div>
+    }
+
+    <section class="rounded-3xl bg-white shadow-soft ring-1 ring-slate-200">
+        <form method="get" class="border-b border-slate-100 px-6 py-5">
+            <div class="grid gap-3 lg:grid-cols-4">
+                <input asp-for="Texto" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100 lg:col-span-2" placeholder="Buscar por número, nombre o descripción" />
+                <select asp-for="Estado" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Todos los estados</option>
+                    <option value="activa">Activas</option>
+                    <option value="inactiva">Inactivas</option>
+                </select>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 rounded-2xl border border-clinic-200 bg-clinic-50 px-5 py-3 text-sm font-semibold text-clinic-700 hover:bg-clinic-100">Filtrar</button>
+                    <a asp-page="/CategoriasServicios/Index" class="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">Limpiar</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Número</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Nombre</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Descripción</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">Precio</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-500">Estado</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @if (Model.Categorias.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" class="px-6 py-10 text-center text-sm text-slate-500">No hay categorías de servicios con los filtros aplicados.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var categoria in Model.Categorias)
+                        {
+                            <tr class="hover:bg-slate-50">
+                                <td class="whitespace-nowrap px-6 py-4 text-sm font-bold text-slate-900">@categoria.CodigoCategoria</td>
+                                <td class="px-6 py-4 text-sm font-semibold text-slate-900">@categoria.Nombre</td>
+                                <td class="max-w-sm px-6 py-4 text-sm text-slate-600">@categoria.Descripcion</td>
+                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-bold text-slate-900">Q @categoria.PrecioBase.ToString("0.00")</td>
+                                <td class="px-6 py-4 text-center">
+                                    @if (categoria.Activo)
+                                    {
+                                        <span class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 ring-1 ring-emerald-100">Activa</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200">Inactiva</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <a asp-page="/CategoriasServicios/Edit" asp-route-id="@categoria.IdCategoriaServicio" class="inline-flex rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Editar</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

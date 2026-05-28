@@ -1,0 +1,236 @@
+@page
+@model ClinicaDental.Web.Pages.Calendario.IndexModel
+@{
+    ViewData["Title"] = "Calendario";
+}
+
+<div class="calendar-page space-y-6">
+    <section class="relative overflow-hidden rounded-[2rem] border border-clinic-100 bg-white p-6 shadow-soft sm:p-8">
+        <div class="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-clinic-100/80 blur-3xl animate-soft-pulse"></div>
+        <div class="absolute -bottom-24 left-1/4 h-72 w-72 rounded-full bg-cyan-100/70 blur-3xl animate-soft-pulse delay-200"></div>
+
+        <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div class="max-w-2xl animate-fade-up">
+                <span class="inline-flex items-center gap-2 rounded-full border border-clinic-100 bg-clinic-50 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-clinic-700">
+                    <i data-lucide="calendar-clock" class="h-4 w-4"></i>
+                    Agenda visual
+                </span>
+                <h1 class="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                    Calendario de citas
+                </h1>
+                <p class="mt-3 text-base leading-7 text-slate-500">
+                    Consulta las citas en vista mensual, semanal o diaria y abre el detalle sin salir de la pantalla.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 animate-fade-up delay-100">
+                <a asp-page="/Citas/Create"
+                   class="inline-flex items-center justify-center gap-2 rounded-2xl bg-clinic-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-clinic-700/20 transition hover:-translate-y-0.5 hover:bg-clinic-800">
+                    <i data-lucide="calendar-plus" class="h-4 w-4"></i>
+                    Nueva cita
+                </a>
+                <a asp-page="/Citas/Index"
+                   class="inline-flex items-center justify-center gap-2 rounded-2xl border border-clinic-200 bg-clinic-50 px-5 py-3 text-sm font-black text-clinic-800 transition hover:-translate-y-0.5 hover:bg-clinic-100">
+                    <i data-lucide="list" class="h-4 w-4"></i>
+                    Ver listado
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="calendar-stat-card animate-fade-up delay-100">
+            <span><i data-lucide="calendar-days" class="h-5 w-5"></i></span>
+            <div>
+                <p>Total de citas</p>
+                <strong>@Model.TotalCitas</strong>
+            </div>
+        </div>
+        <div class="calendar-stat-card animate-fade-up delay-150">
+            <span><i data-lucide="sun" class="h-5 w-5"></i></span>
+            <div>
+                <p>Citas de hoy</p>
+                <strong>@Model.CitasHoy</strong>
+            </div>
+        </div>
+        <div class="calendar-stat-card animate-fade-up delay-200">
+            <span><i data-lucide="calendar-range" class="h-5 w-5"></i></span>
+            <div>
+                <p>Próximos 7 días</p>
+                <strong>@Model.CitasSemana</strong>
+            </div>
+        </div>
+        <div class="calendar-stat-card animate-fade-up delay-250">
+            <span><i data-lucide="clock-3" class="h-5 w-5"></i></span>
+            <div>
+                <p>Pendientes</p>
+                <strong>@Model.CitasPendientes</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="grid gap-5 xl:grid-cols-[1fr_18rem]">
+        <div class="calendar-shell page-card animate-fade-up delay-300 p-4 sm:p-5">
+            <div id="calendar"></div>
+        </div>
+
+        <aside class="page-card animate-fade-up delay-350 p-5">
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <p class="text-sm font-black uppercase tracking-[0.16em] text-clinic-700">Leyenda</p>
+                    <h2 class="mt-1 text-xl font-black text-slate-950">Estados</h2>
+                </div>
+                <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-clinic-50 text-clinic-700 ring-1 ring-clinic-100">
+                    <i data-lucide="palette" class="h-5 w-5"></i>
+                </span>
+            </div>
+
+            <div class="mt-5 space-y-3 text-sm font-bold text-slate-600">
+                <div class="calendar-legend-item"><span class="bg-amber-100 ring-amber-400"></span>Pendiente</div>
+                <div class="calendar-legend-item"><span class="bg-teal-100 ring-teal-600"></span>Confirmada</div>
+                <div class="calendar-legend-item"><span class="bg-blue-100 ring-blue-600"></span>Completada</div>
+                <div class="calendar-legend-item"><span class="bg-red-100 ring-red-500"></span>Cancelada</div>
+                <div class="calendar-legend-item"><span class="bg-sky-100 ring-sky-600"></span>Otro estado</div>
+            </div>
+
+            <div class="mt-6 rounded-3xl border border-clinic-100 bg-clinic-50 p-4 text-sm leading-6 text-clinic-900">
+                <p class="font-black">Tip de uso</p>
+                <p class="mt-1 text-clinic-800/80">Haz clic en una cita para ver paciente, dentista, motivo y acceso directo a editar.</p>
+            </div>
+        </aside>
+    </section>
+</div>
+
+<div id="eventModal" class="calendar-modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+    <div class="w-full max-w-lg animate-fade-up rounded-[2rem] border border-white/70 bg-white p-6 shadow-soft">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <span id="modalEstado" class="inline-flex items-center gap-2 rounded-full border border-clinic-100 bg-clinic-50 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-clinic-700">
+                    Estado
+                </span>
+                <h2 id="modalPaciente" class="mt-4 text-2xl font-black text-slate-950">Paciente</h2>
+                <p id="modalMotivo" class="mt-1 text-sm leading-6 text-slate-500">Motivo</p>
+            </div>
+            <button type="button" id="closeModal" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-900" aria-label="Cerrar detalle">
+                <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
+        </div>
+
+        <dl class="mt-6 grid gap-3 text-sm sm:grid-cols-2">
+            <div class="calendar-detail-item">
+                <dt><i data-lucide="calendar" class="h-4 w-4"></i> Fecha</dt>
+                <dd id="modalFecha">--</dd>
+            </div>
+            <div class="calendar-detail-item">
+                <dt><i data-lucide="clock" class="h-4 w-4"></i> Hora</dt>
+                <dd id="modalHora">--</dd>
+            </div>
+            <div class="calendar-detail-item sm:col-span-2">
+                <dt><i data-lucide="stethoscope" class="h-4 w-4"></i> Dentista</dt>
+                <dd id="modalDentista">--</dd>
+            </div>
+            <div class="calendar-detail-item sm:col-span-2">
+                <dt><i data-lucide="notebook-text" class="h-4 w-4"></i> Observaciones</dt>
+                <dd id="modalObservaciones">--</dd>
+            </div>
+        </dl>
+
+        <div class="mt-6 flex flex-wrap justify-end gap-3">
+            <button type="button" id="secondaryCloseModal" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-600 transition hover:bg-slate-50">
+                Cerrar
+            </button>
+            <a id="modalEditLink" href="#" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-clinic-700 px-5 py-3 text-sm font-black text-white shadow-lg shadow-clinic-700/20 transition hover:-translate-y-0.5 hover:bg-clinic-800">
+                Editar cita
+                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales-all.global.min.js"></script>
+    <script>
+        const citasEvents = @Html.Raw(Model.EventsJson);
+        const modal = document.getElementById("eventModal");
+        const closeButtons = [document.getElementById("closeModal"), document.getElementById("secondaryCloseModal")];
+
+        function setText(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value || "--";
+        }
+
+        function openEventModal(event) {
+            const props = event.extendedProps || {};
+            setText("modalEstado", props.estado);
+            setText("modalPaciente", props.paciente);
+            setText("modalMotivo", props.motivo);
+            setText("modalFecha", props.fecha);
+            setText("modalHora", props.hora);
+            setText("modalDentista", props.dentista);
+            setText("modalObservaciones", props.observaciones);
+
+            const editLink = document.getElementById("modalEditLink");
+            if (editLink) editLink.href = props.editUrl || "#";
+
+            modal?.classList.remove("hidden");
+            modal?.classList.add("flex");
+
+            if (window.lucide) {
+                window.lucide.createIcons({ attrs: { "stroke-width": 2.2 } });
+            }
+        }
+
+        function closeEventModal() {
+            modal?.classList.add("hidden");
+            modal?.classList.remove("flex");
+        }
+
+        closeButtons.forEach(button => button?.addEventListener("click", closeEventModal));
+        modal?.addEventListener("click", function (event) {
+            if (event.target === modal) closeEventModal();
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") closeEventModal();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const calendarEl = document.getElementById("calendar");
+            if (!calendarEl || !window.FullCalendar) return;
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: "es",
+                initialView: "dayGridMonth",
+                height: "auto",
+                nowIndicator: true,
+                selectable: false,
+                eventDisplay: "block",
+                dayMaxEvents: 3,
+                headerToolbar: {
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+                },
+                buttonText: {
+                    today: "Hoy",
+                    month: "Mes",
+                    week: "Semana",
+                    day: "Día",
+                    list: "Lista"
+                },
+                events: citasEvents,
+                eventClick: function (info) {
+                    info.jsEvent.preventDefault();
+                    openEventModal(info.event);
+                },
+                eventDidMount: function (info) {
+                    const props = info.event.extendedProps || {};
+                    info.el.setAttribute("title", `${props.paciente || "Paciente"} · ${props.hora || ""}`);
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+}
