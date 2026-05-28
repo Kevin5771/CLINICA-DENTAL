@@ -1,0 +1,237 @@
+@page
+@model ClinicaDental.Web.Pages.Inventario.IndexModel
+@{
+    ViewData["Title"] = "Consulta de stock";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-slate-900">Consulta de stock</h1>
+            <p class="mt-1 max-w-3xl text-sm text-slate-500">
+                Visualiza el inventario disponible, productos con baja existencia, agotados, vencidos o próximos a vencer.
+            </p>
+        </div>
+
+        <div class="flex flex-col gap-3 sm:flex-row">
+            <a asp-page="/Inventario/Compras"
+               class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-clinic-700">
+                + Registrar compra / entrada
+            </a>
+
+            <a asp-page="/Inventario/Movimientos"
+               class="inline-flex items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-100">
+                Movimientos
+            </a>
+
+            <a asp-page="/Inventario/Create"
+               class="inline-flex items-center justify-center rounded-2xl border border-clinic-200 bg-clinic-50 px-5 py-3 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                + Nuevo producto
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            @successMessage
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            @errorMessage
+        </div>
+    }
+
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+        <div class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+            <p class="text-sm font-medium text-slate-500">Productos</p>
+            <p class="mt-2 text-3xl font-bold text-slate-900">@Model.Resumen.TotalProductos</p>
+        </div>
+
+        <div class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+            <p class="text-sm font-medium text-slate-500">Disponibles</p>
+            <p class="mt-2 text-3xl font-bold text-emerald-600">@Model.Resumen.Disponibles</p>
+        </div>
+
+        <div class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+            <p class="text-sm font-medium text-slate-500">Bajo stock</p>
+            <p class="mt-2 text-3xl font-bold text-amber-600">@Model.Resumen.BajoStock</p>
+        </div>
+
+        <div class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+            <p class="text-sm font-medium text-slate-500">Agotados</p>
+            <p class="mt-2 text-3xl font-bold text-rose-600">@Model.Resumen.Agotados</p>
+        </div>
+
+        <div class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+            <p class="text-sm font-medium text-slate-500">Vencidos</p>
+            <p class="mt-2 text-3xl font-bold text-red-600">@Model.Resumen.Vencidos</p>
+        </div>
+
+        <div class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+            <p class="text-sm font-medium text-slate-500">Por vencer</p>
+            <p class="mt-2 text-3xl font-bold text-cyan-600">@Model.Resumen.ProximosVencer</p>
+        </div>
+    </section>
+
+    <form method="get" class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+        <div class="grid gap-4 xl:grid-cols-12">
+            <div class="xl:col-span-5">
+                <label asp-for="Texto" class="mb-2 block text-sm font-semibold text-slate-700">
+                    Buscar
+                </label>
+
+                <input asp-for="Texto"
+                       class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                       placeholder="Nombre, proveedor, código o estado" />
+            </div>
+
+            <div class="xl:col-span-3">
+                <label asp-for="Estado" class="mb-2 block text-sm font-semibold text-slate-700">
+                    Estado
+                </label>
+
+                <select asp-for="Estado"
+                        class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Todos</option>
+                    <option value="disponible">Disponible</option>
+                    <option value="bajo_stock">Bajo stock</option>
+                    <option value="agotado">Agotado</option>
+                    <option value="vencido">Vencido</option>
+                    <option value="proximo_vencer">Próximo a vencer</option>
+                </select>
+            </div>
+
+            <div class="flex items-end gap-3 xl:col-span-4">
+                <button type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-2xl border border-clinic-200 bg-clinic-50 px-4 py-3 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                    Filtrar
+                </button>
+
+                <a asp-page="/Inventario/Index"
+                   class="inline-flex w-full items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Limpiar
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700">
+                <input asp-for="SoloBajoStock" class="h-4 w-4 rounded border-slate-300 text-clinic-600 focus:ring-clinic-500" />
+                Solo bajo stock
+            </label>
+
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700">
+                <input asp-for="SoloAgotados" class="h-4 w-4 rounded border-slate-300 text-clinic-600 focus:ring-clinic-500" />
+                Solo agotados
+            </label>
+
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700">
+                <input asp-for="SoloVencidos" class="h-4 w-4 rounded border-slate-300 text-clinic-600 focus:ring-clinic-500" />
+                Solo vencidos
+            </label>
+
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700">
+                <input asp-for="SoloProximosVencer" class="h-4 w-4 rounded border-slate-300 text-clinic-600 focus:ring-clinic-500" />
+                Próximos a vencer
+            </label>
+        </div>
+    </form>
+
+    <div class="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-200">
+        <div class="border-b border-slate-100 px-6 py-4">
+            <h2 class="text-lg font-bold text-slate-900">Listado de productos en inventario</h2>
+            <p class="mt-1 text-sm text-slate-500">
+                Se muestran únicamente productos activos y registrados.
+            </p>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Código</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Producto</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Proveedor</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Cantidad disponible</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Stock mínimo</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Vencimiento</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Estado</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Actualizado</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @if (Model.Items.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="9" class="px-6 py-10 text-center text-sm text-slate-500">
+                                No se encontraron productos con los filtros aplicados.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr class="transition hover:bg-slate-50">
+                                <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900">
+                                    @item.CodigoProducto
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-semibold text-slate-900">@item.Nombre</p>
+
+                                    @if (!string.IsNullOrWhiteSpace(item.Descripcion))
+                                    {
+                                        <p class="mt-1 max-w-md text-xs text-slate-500">
+                                            @item.Descripcion
+                                        </p>
+                                    }
+                                </td>
+
+                                <td class="px-6 py-4 text-sm text-slate-700">
+                                    @(string.IsNullOrWhiteSpace(item.Proveedor) ? "Sin proveedor" : item.Proveedor)
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-900">
+                                    @item.CantidadDisponible.ToString("0.##") @item.UnidadMedida
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                    @item.StockMinimo.ToString("0.##") @item.UnidadMedida
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                    @(item.FechaVencimiento.HasValue ? item.FechaVencimiento.Value.ToString("yyyy-MM-dd") : "Sin fecha")
+                                </td>
+
+                                <td class="px-6 py-4 text-sm">
+                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold @ClinicaDental.Web.Pages.Inventario.IndexModel.GetEstadoClasses(item.EstadoClave)">
+                                        @item.EstadoProducto
+                                    </span>
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                    @(item.UltimaActualizacion.HasValue ? item.UltimaActualizacion.Value.ToString("yyyy-MM-dd HH:mm") : "Sin actualización")
+                                </td>
+
+                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+                                    <a asp-page="/Inventario/Edit"
+                                       asp-route-id="@item.IdProducto"
+                                       class="inline-flex items-center justify-center rounded-xl border border-clinic-200 bg-clinic-50 px-3 py-2 text-xs font-bold text-clinic-700 transition hover:bg-clinic-100">
+                                        Editar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
