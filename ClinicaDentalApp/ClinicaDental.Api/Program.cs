@@ -91,3 +91,5 @@ app.MapControllers();
 app.MapGet("/", () => Results.Ok(new { message = "ClinicaDental API funcionando" }));
 
 app.Run();
+
+public partial class Program { }
