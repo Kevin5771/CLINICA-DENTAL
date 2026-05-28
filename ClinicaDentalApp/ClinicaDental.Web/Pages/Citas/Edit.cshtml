@@ -1,0 +1,210 @@
+@page "{id:int}"
+@model ClinicaDental.Web.Pages.Citas.EditModel
+@{
+    ViewData["Title"] = "Editar cita";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Editar cita</h1>
+            <p class="text-sm text-slate-500">Modifica la fecha, hora, motivo, dentista o estado de una cita existente.</p>
+        </div>
+
+        <a asp-page="/Citas/Index"
+           class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            Volver
+        </a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            @Model.Message
+        </div>
+    }
+
+    <div asp-validation-summary="All"
+         class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    </div>
+
+    <div class="rounded-3xl bg-white p-6 shadow-soft ring-1 ring-slate-200">
+        <form method="post" class="space-y-6">
+            <input asp-for="Input.IdCita" type="hidden" />
+            <input asp-for="Input.IdPaciente" type="hidden" />
+            <input asp-for="Input.IdUsuarioAccion" type="hidden" />
+            <input asp-for="Input.IdDentista" type="hidden" id="IdDentista" />
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold text-slate-700">Paciente</label>
+                    <input class="block w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-700 outline-none"
+                           value="@Model.Input.PacienteReferencia"
+                           readonly />
+                    <div class="mt-2 text-xs text-slate-500">Se muestra como referencia y se mantiene la cita original.</div>
+                </div>
+
+                <div class="relative">
+                    <label class="mb-2 block text-sm font-semibold text-slate-700">Personal asignado</label>
+                    <input type="text"
+                           id="dentistaBusqueda"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                           placeholder="Escribe nombre o apellido del dentista"
+                           autocomplete="off"
+                           value="@Model.DentistaSeleccionado" />
+
+                    <div id="dentistaResultados"
+                         class="absolute z-20 mt-2 hidden w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+                    </div>
+
+                    <div id="dentistaSeleccionado" class="mt-2 text-xs text-emerald-600">
+                        @(!string.IsNullOrWhiteSpace(Model.DentistaSeleccionado) ? $"Seleccionado: {Model.DentistaSeleccionado}" : string.Empty)
+                    </div>
+                    <span asp-validation-for="Input.IdDentista" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-3">
+                <div>
+                    <label asp-for="Input.Fecha" class="mb-2 block text-sm font-semibold text-slate-700">Fecha de la cita</label>
+                    <input asp-for="Input.Fecha"
+                           type="date"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="Input.Fecha" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.HoraInicio" class="mb-2 block text-sm font-semibold text-slate-700">Hora de la cita</label>
+                    <input asp-for="Input.HoraInicio"
+                           type="time"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.HoraInicio" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.HoraFin" class="mb-2 block text-sm font-semibold text-slate-700">Hora fin</label>
+                    <input asp-for="Input.HoraFin"
+                           type="time"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.HoraFin" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label asp-for="Input.Motivo" class="mb-2 block text-sm font-semibold text-slate-700">Motivo de consulta</label>
+                    <input asp-for="Input.Motivo"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Motivo" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.IdEstadoCita" class="mb-2 block text-sm font-semibold text-slate-700">Estado de la cita</label>
+                    <select asp-for="Input.IdEstadoCita"
+                            class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                        <option value="0">Seleccione</option>
+                        @foreach (var estado in Model.Estados)
+                        {
+                            <option value="@estado.Id">@estado.Nombre</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Input.IdEstadoCita" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="Input.MotivoCambio" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                <input asp-for="Input.MotivoCambio"
+                       class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                       placeholder="Ejemplo: cambio de agenda o solicitud del paciente" />
+                <span asp-validation-for="Input.MotivoCambio" class="mt-2 block text-sm text-red-600"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.Observaciones" class="mb-2 block text-sm font-semibold text-slate-700">Observaciones</label>
+                <textarea asp-for="Input.Observaciones"
+                          rows="4"
+                          class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"></textarea>
+                <span asp-validation-for="Input.Observaciones" class="mt-2 block text-sm text-red-600"></span>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+                <button type="submit"
+                        class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-clinic-700">
+                    Guardar cambios
+                </button>
+
+                <a asp-page="/Citas/Index"
+                   class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const dentistas = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.Dentistas.Select(d => new {
+            id = d.Id,
+            nombre = d.Nombre,
+            texto = d.Nombre
+        })
+    ));
+
+    const input = document.getElementById("dentistaBusqueda");
+    const resultados = document.getElementById("dentistaResultados");
+    const hidden = document.getElementById("IdDentista");
+    const seleccionado = document.getElementById("dentistaSeleccionado");
+
+    function ocultarResultados() {
+        resultados.classList.add("hidden");
+        resultados.innerHTML = "";
+    }
+
+    function mostrarResultados(items) {
+        resultados.innerHTML = "";
+
+        if (!items.length) {
+            resultados.innerHTML = '<div class="px-4 py-3 text-sm text-slate-500">No se encontraron dentistas.</div>';
+            resultados.classList.remove("hidden");
+            return;
+        }
+
+        items.forEach(item => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "block w-full border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50";
+            btn.innerHTML = `<div class="font-semibold text-slate-800">${item.nombre}</div><small class="text-slate-500">Dentista</small>`;
+            btn.addEventListener("click", () => {
+                input.value = item.texto;
+                hidden.value = item.id;
+                seleccionado.textContent = "Seleccionado: " + item.texto;
+                ocultarResultados();
+            });
+            resultados.appendChild(btn);
+        });
+
+        resultados.classList.remove("hidden");
+    }
+
+    input.addEventListener("input", () => {
+        const q = input.value.trim().toLowerCase();
+        if (q.length < 1) {
+            ocultarResultados();
+            return;
+        }
+
+        const filtrados = dentistas.filter(x => x.texto.toLowerCase().includes(q)).slice(0, 8);
+        mostrarResultados(filtrados);
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!resultados.contains(e.target) && e.target !== input) {
+            ocultarResultados();
+        }
+    });
+</script>
+}

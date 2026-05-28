@@ -1,0 +1,68 @@
+@page "{id:int}"
+@model ClinicaDental.Web.Pages.CategoriasServicios.EditModel
+@{
+    ViewData["Title"] = "Editar categoría";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Editar categoría de servicio</h1>
+            <p class="mt-1 max-w-3xl text-sm text-slate-500">Actualiza el número, nombre, precio, descripción o estado del servicio.</p>
+        </div>
+        <a asp-page="/CategoriasServicios/Index" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Volver al catálogo</a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">@Model.Message</div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+    }
+
+    <section class="rounded-3xl bg-white p-6 shadow-soft ring-1 ring-slate-200">
+        <form method="post" class="space-y-6">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="grid gap-5 lg:grid-cols-3">
+                <div>
+                    <label asp-for="Input.CodigoCategoria" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.CodigoCategoria" class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.CodigoCategoria" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.Nombre" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Nombre" class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Nombre" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.PrecioBase" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.PrecioBase" type="number" step="0.01" min="0.01" class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.PrecioBase" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="Input.Descripcion" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                <textarea asp-for="Input.Descripcion" rows="4" class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"></textarea>
+                <span asp-validation-for="Input.Descripcion" class="mt-2 block text-sm text-red-600"></span>
+            </div>
+
+            <label class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <input asp-for="Input.Activo" class="mt-1 h-4 w-4 rounded border-slate-300 text-clinic-600 focus:ring-clinic-500" />
+                <span>
+                    <span class="block text-sm font-semibold text-slate-800">Categoría activa</span>
+                    <span class="block text-xs text-slate-500">Si se desactiva, ya no aparecerá para registrar nuevas ventas, pero se mantiene el historial.</span>
+                </span>
+            </label>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+                <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-clinic-700">Guardar cambios</button>
+                <a asp-page="/CategoriasServicios/Index" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</div>

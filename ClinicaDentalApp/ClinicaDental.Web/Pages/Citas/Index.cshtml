@@ -1,0 +1,144 @@
+@page
+@model ClinicaDental.Web.Pages.Citas.IndexModel
+@{
+    ViewData["Title"] = "Citas";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Citas</h1>
+            <p class="mt-1 text-sm text-slate-500">Agenda y control de citas registradas.</p>
+        </div>
+
+        <a asp-page="/Citas/Create"
+           class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-clinic-700">
+            Nueva cita
+        </a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+    {
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            @Model.SuccessMessage
+        </div>
+    }
+
+    <form method="get" class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div>
+                <label asp-for="FechaDesde" class="mb-2 block text-sm font-semibold text-slate-700">Desde</label>
+                <input asp-for="FechaDesde"
+                       type="date"
+                       class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+            </div>
+
+            <div>
+                <label asp-for="FechaHasta" class="mb-2 block text-sm font-semibold text-slate-700">Hasta</label>
+                <input asp-for="FechaHasta"
+                       type="date"
+                       class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+            </div>
+
+            <div>
+                <label asp-for="IdEstadoCita" class="mb-2 block text-sm font-semibold text-slate-700">Estado</label>
+                <select asp-for="IdEstadoCita"
+                        class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Todos</option>
+                    @foreach (var estado in Model.Estados)
+                    {
+                        <option value="@estado.Id">@estado.Nombre</option>
+                    }
+                </select>
+            </div>
+
+            <div class="flex items-end gap-3">
+                <button type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-2xl border border-clinic-200 bg-clinic-50 px-4 py-3 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                    Filtrar
+                </button>
+
+                <a asp-page="/Citas/Index"
+                   class="inline-flex w-full items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Limpiar
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <div class="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Fecha</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Hora inicio</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Hora fin</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Paciente</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Dentista</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Estado</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Motivo</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                @if (Model.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="px-6 py-10 text-center text-sm text-slate-500">
+                            No hay citas registradas.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in Model.Items)
+                    {
+                        var estadoTexto = item.EstadoCita?.ToLowerInvariant() ?? string.Empty;
+                        var estadoClass = estadoTexto.Contains("cancel")
+                            ? "bg-red-50 text-red-700 ring-red-100"
+                            : (estadoTexto.Contains("complet") || estadoTexto.Contains("realiz") || estadoTexto.Contains("final"))
+                                ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
+                                : estadoTexto.Contains("pend")
+                                    ? "bg-amber-50 text-amber-700 ring-amber-100"
+                                    : "bg-clinic-50 text-clinic-700 ring-clinic-100";
+
+                        <tr class="transition hover:bg-slate-50">
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                @item.Fecha.ToString("yyyy-MM-dd")
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                @item.HoraInicio
+                            </td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">
+                                @item.HoraFin
+                            </td>
+                            <td class="px-6 py-4 text-sm font-medium text-slate-900">
+                                @item.Paciente
+                            </td>
+                            <td class="px-6 py-4 text-sm text-slate-700">
+                                @item.Dentista
+                            </td>
+                            <td class="px-6 py-4 text-sm">
+                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold ring-1 @estadoClass">
+                                    @item.EstadoCita
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-slate-700">
+                                @item.Motivo
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <a asp-page="/Citas/Edit"
+                                   asp-route-id="@item.IdCita"
+                                   class="inline-flex items-center justify-center rounded-xl border border-clinic-200 bg-clinic-50 px-4 py-2 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                                    <i data-lucide="pencil" class="mr-1.5 h-4 w-4"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
