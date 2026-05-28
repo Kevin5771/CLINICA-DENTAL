@@ -1,0 +1,115 @@
+@page
+@model ClinicaDental.Web.Pages.Pacientes.IndexModel
+@{
+    ViewData["Title"] = "Pacientes";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Pacientes</h1>
+            <p class="mt-1 text-sm text-slate-500">Listado general de pacientes registrados.</p>
+        </div>
+
+        <a asp-page="/Pacientes/Create"
+           class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-clinic-700">
+            Nuevo paciente
+        </a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+    {
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            @Model.SuccessMessage
+        </div>
+    }
+
+    <form method="get" class="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-200">
+        <div class="grid gap-4 md:grid-cols-12">
+            <div class="md:col-span-8">
+                <label asp-for="Texto" class="mb-2 block text-sm font-semibold text-slate-700">Buscar</label>
+                <input asp-for="Texto"
+                       class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100"
+                       placeholder="Código, nombre, apellido, teléfono o correo" />
+            </div>
+
+            <div class="md:col-span-2">
+                <label asp-for="Activo" class="mb-2 block text-sm font-semibold text-slate-700">Estado</label>
+                <select asp-for="Activo"
+                        class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                    <option value="">Todos</option>
+                    <option value="true">Activos</option>
+                    <option value="false">Inactivos</option>
+                </select>
+            </div>
+
+            <div class="flex items-end gap-3 md:col-span-2">
+                <button type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-2xl border border-clinic-200 bg-clinic-50 px-4 py-3 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                    Filtrar
+                </button>
+                <a asp-page="/Pacientes/Index"
+                   class="inline-flex w-full items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Limpiar
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <div class="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Código</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Nombre</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Apellido</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Teléfono</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Edad</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Género</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">Estado</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                @if (Model.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="px-6 py-10 text-center text-sm text-slate-500">
+                            <span class="empty-state-icon"><i data-lucide="users" class="h-6 w-6"></i></span>
+                            <p class="mt-3 font-semibold text-slate-700">No hay pacientes registrados.</p>
+                            <p class="mt-1 text-xs text-slate-500">Puedes crear el primer expediente desde el botón superior.</p>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr class="transition hover:bg-slate-50">
+                            <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">@item.CodigoPaciente</td>
+                            <td class="px-6 py-4 text-sm text-slate-700">@item.Nombres</td>
+                            <td class="px-6 py-4 text-sm text-slate-700">@item.Apellidos</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">@item.Telefono</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">@item.Edad</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-700">@item.Genero</td>
+                            <td class="px-6 py-4 text-sm">
+                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold @(item.Activo ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700")">
+                                    @(item.Activo ? "Activo" : "Inactivo")
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <a asp-page="/Pacientes/Edit"
+                                   asp-route-id="@item.IdPaciente"
+                                   class="inline-flex items-center justify-center rounded-xl border border-clinic-200 bg-clinic-50 px-4 py-2 text-sm font-semibold text-clinic-700 transition hover:bg-clinic-100">
+                                    <i data-lucide="pencil" class="mr-1.5 h-4 w-4"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

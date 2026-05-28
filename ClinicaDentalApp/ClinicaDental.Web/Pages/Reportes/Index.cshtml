@@ -1,0 +1,323 @@
+@page
+@model ClinicaDental.Web.Pages.Reportes.IndexModel
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<div class="space-y-8">
+    <section class="rounded-3xl bg-gradient-to-r from-clinic-800 to-cyan-600 p-8 text-white shadow-soft">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide text-cyan-100">RF-15</p>
+                <h1 class="mt-2 text-3xl font-bold">Reportes administrativos</h1>
+                <p class="mt-2 max-w-3xl text-sm text-cyan-50">
+                    Consulta reportes de citas, pacientes, inventario y ventas con filtros para apoyar el control administrativo de la clínica.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    @if (Model.Resumen is not null)
+    {
+        <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-sm text-slate-500">Citas</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">@Model.Resumen.TotalCitas</p>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-sm text-slate-500">Pacientes activos</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">@Model.Resumen.TotalPacientes</p>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-sm text-slate-500">Ventas</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">@Model.Resumen.TotalVentas</p>
+                <p class="text-sm font-semibold text-clinic-700">Q @Model.Resumen.MontoVentas.ToString("0.00")</p>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-sm text-slate-500">Alertas inventario</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900">@(Model.Resumen.ProductosBajoStock + Model.Resumen.ProductosVencidos)</p>
+                <p class="text-sm text-slate-500">Bajo stock: @Model.Resumen.ProductosBajoStock | Vencidos: @Model.Resumen.ProductosVencidos</p>
+            </div>
+        </section>
+    }
+
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <form method="get" class="space-y-5">
+            <div class="grid gap-4 md:grid-cols-4">
+                <div>
+                    <label asp-for="Filtro.TipoReporte" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.TipoReporte" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="ventas">Reporte de ventas</option>
+                        <option value="citas">Reporte de citas</option>
+                        <option value="pacientes">Reporte de pacientes</option>
+                        <option value="inventario">Reporte de inventario</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.FechaDesde" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Filtro.FechaDesde" type="date" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.FechaHasta" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Filtro.FechaHasta" type="date" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.Texto" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Filtro.Texto" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Buscar..." />
+                </div>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-4">
+                <div>
+                    <label asp-for="Filtro.IdPaciente" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.IdPaciente" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todos</option>
+                        @foreach (var paciente in Model.PacientesCatalogo)
+                        {
+                            <option value="@paciente.IdPaciente">@paciente.NombreCompleto</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.IdUsuarioResponsable" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.IdUsuarioResponsable" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todos</option>
+                        @foreach (var usuario in Model.UsuariosCatalogo)
+                        {
+                            <option value="@usuario.IdUsuario">@usuario.NombreCompleto</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.IdEstadoCita" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.IdEstadoCita" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todos</option>
+                        @foreach (var estado in Model.EstadosCita)
+                        {
+                            <option value="@estado.IdEstadoCita">@estado.Nombre</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.IdEstadoVenta" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.IdEstadoVenta" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todos</option>
+                        @foreach (var estado in Model.EstadosVenta)
+                        {
+                            <option value="@estado.IdEstadoVenta">@estado.Nombre</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-4">
+                <div>
+                    <label asp-for="Filtro.IdCategoriaServicio" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.IdCategoriaServicio" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todas</option>
+                        @foreach (var categoria in Model.CategoriasServicio)
+                        {
+                            <option value="@categoria.IdCategoriaServicio">@categoria.Nombre</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.IdProveedor" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.IdProveedor" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todos</option>
+                        @foreach (var proveedor in Model.Proveedores)
+                        {
+                            <option value="@proveedor.IdProveedor">@proveedor.Nombre</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.EstadoInventario" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.EstadoInventario" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todos</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="bajo_stock">Bajo stock</option>
+                        <option value="agotado">Agotado</option>
+                        <option value="vencido">Vencido</option>
+                        <option value="proximo_vencer">Próximo a vencer</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label asp-for="Filtro.Activo" class="mb-1 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Filtro.Activo" class="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+                        <option value="">Todos</option>
+                        <option value="true">Activos</option>
+                        <option value="false">Inactivos</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+                <button type="submit"
+                        class="inline-flex items-center justify-center rounded-2xl bg-clinic-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-clinic-800">
+                    Generar reporte
+                </button>
+
+                <button type="submit"
+                        asp-page-handler="Exportar"
+                        class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
+                    Exportar CSV
+                </button>
+            </div>
+        </form>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                @Model.ErrorMessage
+            </div>
+        }
+    </section>
+
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 px-6 py-4">
+            <h2 class="text-lg font-bold text-slate-900">
+                Resultado del reporte
+            </h2>
+        </div>
+
+        @if (Model.Filtro.TipoReporte == "citas")
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Fecha</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Hora</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Paciente</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Dentista</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach (var item in Model.Citas)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 text-sm">@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td class="px-6 py-4 text-sm">@item.HoraInicio.ToString(@"hh\:mm") - @item.HoraFin.ToString(@"hh\:mm")</td>
+                                <td class="px-6 py-4 text-sm">@item.Paciente</td>
+                                <td class="px-6 py-4 text-sm">@item.Dentista</td>
+                                <td class="px-6 py-4 text-sm font-semibold">@item.EstadoCita</td>
+                                <td class="px-6 py-4 text-sm">@item.Motivo</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else if (Model.Filtro.TipoReporte == "pacientes")
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Código</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Paciente</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Teléfono</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Correo</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Estado</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold uppercase text-slate-500">Citas</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold uppercase text-slate-500">Ventas</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach (var item in Model.Pacientes)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 text-sm font-semibold">@item.CodigoPaciente</td>
+                                <td class="px-6 py-4 text-sm">@item.Paciente</td>
+                                <td class="px-6 py-4 text-sm">@item.Telefono</td>
+                                <td class="px-6 py-4 text-sm">@item.Correo</td>
+                                <td class="px-6 py-4 text-sm">@(item.Activo ? "Activo" : "Inactivo")</td>
+                                <td class="px-6 py-4 text-right text-sm">@item.TotalCitas</td>
+                                <td class="px-6 py-4 text-right text-sm">@item.TotalVentas</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else if (Model.Filtro.TipoReporte == "inventario")
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Código</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Producto</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Proveedor</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold uppercase text-slate-500">Stock</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Vence</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold uppercase text-slate-500">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach (var item in Model.Inventario)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 text-sm font-semibold">@item.CodigoProducto</td>
+                                <td class="px-6 py-4 text-sm">@item.Producto</td>
+                                <td class="px-6 py-4 text-sm">@item.Proveedor</td>
+                                <td class="px-6 py-4 text-right text-sm">@item.StockActual.ToString("0.##") @item.UnidadMedida</td>
+                                <td class="px-6 py-4 text-sm font-semibold">@item.EstadoProducto</td>
+                                <td class="px-6 py-4 text-sm">@(item.FechaVencimiento?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td class="px-6 py-4 text-right text-sm font-bold">Q @item.ValorInventario.ToString("0.00")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">No.</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Fecha</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Paciente</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Personal</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Servicio</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold uppercase text-slate-500">Estado</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold uppercase text-slate-500">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach (var item in Model.Ventas)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 text-sm font-semibold">@item.NumeroVenta</td>
+                                <td class="px-6 py-4 text-sm">@item.FechaVenta.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="px-6 py-4 text-sm">@item.Paciente</td>
+                                <td class="px-6 py-4 text-sm">@item.UsuarioResponsable</td>
+                                <td class="px-6 py-4 text-sm">@item.CategoriaServicio</td>
+                                <td class="px-6 py-4 text-sm font-semibold">@item.EstadoVenta</td>
+                                <td class="px-6 py-4 text-right text-sm font-bold">Q @item.Total.ToString("0.00")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>

@@ -1,0 +1,130 @@
+@page
+@model ClinicaDental.Web.Pages.Pacientes.CreateModel
+@{
+    ViewData["Title"] = "Nuevo paciente";
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Nuevo paciente</h1>
+            <p class="text-sm text-slate-500">Completa la información básica del paciente.</p>
+        </div>
+
+        <a asp-page="/Pacientes/Index"
+           class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            Volver
+        </a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            @Model.Message
+        </div>
+    }
+
+    <div asp-validation-summary="All"
+         class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    </div>
+
+    <div class="rounded-3xl bg-white p-6 shadow-soft ring-1 ring-slate-200">
+        <form method="post" class="space-y-6">
+            <div class="grid gap-5 md:grid-cols-3">
+                <div>
+                    <label asp-for="Input.CodigoPaciente" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.CodigoPaciente"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.CodigoPaciente" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Nombres" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Nombres"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Nombres" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Apellidos" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Apellidos"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Apellidos" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-3">
+                <div>
+                    <label asp-for="Input.Telefono" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Telefono"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Telefono" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.FechaNacimiento" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.FechaNacimiento"
+                           type="date"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.FechaNacimiento" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Genero" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <select asp-for="Input.Genero"
+                            class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100">
+                        <option value="">Seleccione</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <span asp-validation-for="Input.Genero" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label asp-for="Input.Direccion" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Direccion"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Direccion" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.Correo" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Correo"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Correo" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label asp-for="Input.Alergias" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.Alergias"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.Alergias" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Input.ObservacionesGenerales" class="mb-2 block text-sm font-semibold text-slate-700"></label>
+                    <input asp-for="Input.ObservacionesGenerales"
+                           class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-clinic-500 focus:ring-4 focus:ring-clinic-100" />
+                    <span asp-validation-for="Input.ObservacionesGenerales" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+                <button type="submit"
+                        class="inline-flex items-center justify-center rounded-2xl bg-clinic-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-clinic-700">
+                    Guardar paciente
+                </button>
+
+                <a asp-page="/Pacientes/Index"
+                   class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
