@@ -1,0 +1,36 @@
+PRUEBA K6 LOGIN
+
+k6 run -e BASE_URL=http://localhost:5000 -e API_USER=ADMIN001 -e API_PASSWORD=Admin123 .\k6-tests\01-login.js
+
+PRUEBA K6 CATALOGOS
+
+k6 run -e BASE_URL=http://localhost:5000 -e API_USER=ADMIN001 -e API_PASSWORD=Admin123 .\k6-tests\02-catalogos.js
+
+PRUEBA K6 PACIENTES
+
+k6 run -e BASE_URL=http://localhost:5000 -e API_USER=ADMIN001 -e API_PASSWORD=Admin123 .\k6-tests\03-pacientes-readonly.js
+
+PRUEBA K6 CITAS
+
+k6 run -e BASE_URL=http://localhost:5000 -e API_USER=ADMIN001 -e API_PASSWORD=Admin123 .\k6-tests\04-citas-readonly.js
+
+PRUEBA K6 CARGA BASICA
+
+k6 run -e BASE_URL=http://localhost:5000 -e API_USER=ADMIN001 -e API_PASSWORD=Admin123 .\k6-tests\06-carga-basica-api.js
+
+
+PRUEBAS UNITARIAS
+
+dotnet test .\ClinicaDental.Api.UnitTests\ClinicaDental.Api.UnitTests.csproj
+
+PRUEBAS DE INTEGRACION
+
+dotnet test .\ClinicaDental.Api.IntegrationTests\ClinicaDental.Api.IntegrationTests.csproj
+
+PRUEBAS END TO END
+
+dotnet test .\ClinicaDental.Web.E2ETests\ClinicaDental.Web.E2ETests.csproj
+
+PROBAR LAS PRUEBAS UNITARIAS A EN TO END
+
+dotnet test ClinicaDentalApp.sln
