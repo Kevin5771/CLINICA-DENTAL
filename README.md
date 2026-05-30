@@ -8,6 +8,8 @@ Base inicial del proyecto para clínica dental con:
 - Autenticación básica con JWT en la API
 - Consumo de API desde Razor Pages
 
+- ENLACE DOCUMENTACIÓN DE SPRINTS: https://drive.google.com/file/d/1ThGLmwg-wFXJ0wR2srmWdacGoExI0whA/view?usp=drive_link 
+
 ## Qué incluye esta primera entrega
 
 ### API (`ClinicaDental.Api`)
